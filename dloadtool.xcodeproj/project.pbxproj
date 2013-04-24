@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		8A80C82316B98E23007E940B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A80C82216B98E23007E940B /* main.cpp */; };
+		8A80C83516BAC59F007E940B /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A80C83416BAC59F007E940B /* CoreFoundation.framework */; };
+		8A80C83916BACB12007E940B /* IOKit in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A80C83816BACB12007E940B /* IOKit */; };
+		8A80C83E16BAD77F007E940B /* usb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A80C83D16BAD77F007E940B /* usb.cpp */; };
+		8A80C84116BAE9DA007E940B /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A80C83F16BAE9DA007E940B /* util.cpp */; };
+		8A80C84416BAF256007E940B /* dload.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8A80C84216BAF256007E940B /* dload.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -17,6 +22,15 @@
 		8A80C81E16B98E23007E940B /* PackageVersion.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PackageVersion.plist; sourceTree = "<group>"; };
 		8A80C82116B98E23007E940B /* 0xdeadfa11 */ = {isa = PBXFileReference; lastKnownFileType = text; name = 0xdeadfa11; path = Package/usr/bin/0xdeadfa11; sourceTree = "<group>"; };
 		8A80C82216B98E23007E940B /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		8A80C82916B98E45007E940B /* libIOKit.A.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libIOKit.A.dylib; path = usr/lib/libIOKit.A.dylib; sourceTree = SDKROOT; };
+		8A80C83416BAC59F007E940B /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		8A80C83816BACB12007E940B /* IOKit */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = IOKit; path = System/Library/Frameworks/IOKit.framework/IOKit; sourceTree = SDKROOT; };
+		8A80C83C16BAD499007E940B /* usb.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = usb.h; sourceTree = "<group>"; };
+		8A80C83D16BAD77F007E940B /* usb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = usb.cpp; sourceTree = "<group>"; };
+		8A80C83F16BAE9DA007E940B /* util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = util.cpp; sourceTree = "<group>"; };
+		8A80C84016BAE9DA007E940B /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
+		8A80C84216BAF256007E940B /* dload.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dload.cpp; sourceTree = "<group>"; };
+		8A80C84316BAF256007E940B /* dload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dload.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -24,6 +38,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8A80C83916BACB12007E940B /* IOKit in Frameworks */,
+				8A80C83516BAC59F007E940B /* CoreFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -33,8 +49,10 @@
 		8A80C80A16B98E23007E940B = {
 			isa = PBXGroup;
 			children = (
+				8A80C83416BAC59F007E940B /* CoreFoundation.framework */,
 				8A80C81816B98E23007E940B /* dloadtool */,
 				8A80C81616B98E23007E940B /* Products */,
+				8A80C83316BAC582007E940B /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -49,6 +67,12 @@
 		8A80C81816B98E23007E940B /* dloadtool */ = {
 			isa = PBXGroup;
 			children = (
+				8A80C84216BAF256007E940B /* dload.cpp */,
+				8A80C84316BAF256007E940B /* dload.h */,
+				8A80C83F16BAE9DA007E940B /* util.cpp */,
+				8A80C84016BAE9DA007E940B /* util.h */,
+				8A80C83D16BAD77F007E940B /* usb.cpp */,
+				8A80C83C16BAD499007E940B /* usb.h */,
 				8A80C82216B98E23007E940B /* main.cpp */,
 				8A80C81916B98E23007E940B /* Package */,
 				8A80C81D16B98E23007E940B /* Supporting Files */,
@@ -96,6 +120,15 @@
 				8A80C82116B98E23007E940B /* 0xdeadfa11 */,
 			);
 			name = bin;
+			sourceTree = "<group>";
+		};
+		8A80C83316BAC582007E940B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8A80C83816BACB12007E940B /* IOKit */,
+				8A80C82916B98E45007E940B /* libIOKit.A.dylib */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -165,6 +198,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8A80C82316B98E23007E940B /* main.cpp in Sources */,
+				8A80C83E16BAD77F007E940B /* usb.cpp in Sources */,
+				8A80C84116BAE9DA007E940B /* util.cpp in Sources */,
+				8A80C84416BAF256007E940B /* dload.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -192,7 +228,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(iOSOpenDevPath)/include/**";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				LIBRARY_SEARCH_PATHS = "$(iOSOpenDevPath)/lib/**";
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -216,7 +252,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(iOSOpenDevPath)/include/**";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				LIBRARY_SEARCH_PATHS = "$(iOSOpenDevPath)/lib/**";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -229,13 +265,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				INSTALL_PATH = /usr/bin;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SDKROOT)$(SYSTEM_LIBRARY_DIR)/Frameworks/IOKit.framework\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				iOSOpenDevBuildPackageOnAnyBuild = NO;
 				iOSOpenDevCopyOnBuild = NO;
-				iOSOpenDevDevice = "";
+				iOSOpenDevDevice = aphone4;
 				iOSOpenDevInstallOnAnyBuild = NO;
 				iOSOpenDevInstallOnProfiling = YES;
-				iOSOpenDevRespringOnInstall = YES;
+				iOSOpenDevRespringOnInstall = NO;
 				iOSOpenDevUsePackageVersionPList = YES;
 			};
 			name = Debug;
@@ -244,13 +284,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				INSTALL_PATH = /usr/bin;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SDKROOT)$(SYSTEM_LIBRARY_DIR)/Frameworks/IOKit.framework\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				iOSOpenDevBuildPackageOnAnyBuild = NO;
 				iOSOpenDevCopyOnBuild = NO;
-				iOSOpenDevDevice = "";
+				iOSOpenDevDevice = aphone4;
 				iOSOpenDevInstallOnAnyBuild = NO;
 				iOSOpenDevInstallOnProfiling = YES;
-				iOSOpenDevRespringOnInstall = YES;
+				iOSOpenDevRespringOnInstall = NO;
 				iOSOpenDevUsePackageVersionPList = YES;
 			};
 			name = Release;
