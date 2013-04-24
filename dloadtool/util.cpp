@@ -62,6 +62,22 @@ void hexdump (unsigned char *data, unsigned int amount) {
     return;
 }
 
+uint16_t flip_endian16(uint16_t value) {
+    uint16_t result = 0;
+    result |= (value & 0xFF) << 8;
+    result |= (value & 0xFF00) >> 8;
+    return result;
+}
+
+uint32_t flip_endian32(uint32_t value) {
+    uint32_t result = 0;
+    result |= (value & 0xFF) << 24;
+    result |= (value & 0xFF00) << 8;
+    result |= (value & 0xFF0000) >> 8;
+    result |= (value & 0xFF000000) >> 24;
+    return result;
+}
+
 /* QCDM protocol frames are pseudo Async HDLC frames which end with a 3-byte
  * trailer.  This trailer consists of the 16-bit CRC of the frame plus an ending
  * "async control character" whose value is 0x7E.  The frame *and* the CRC are
@@ -113,155 +129,6 @@ u_int16_t dm_crc16 (const char *buffer, size_t len) {
         crc = crc_table[(crc ^ *buffer++) & 0xff] ^ (crc >> 8);
     return ~crc;
 }
-
-#define DIAG_ESC_CHAR     0x7D  /* Escape sequence 1st character value */
-#define DIAG_ESC_MASK     0x20  /* Escape sequence complement value */
-
-/* Performs DM escaping on inbuf putting the result into outbuf, and returns
- * the final length of the buffer.
- */
-size_t dm_escape (const char *inbuf, size_t inbuf_len, char *outbuf, size_t outbuf_len) {
-    const char *src = inbuf;
-    char *dst = outbuf;
-    size_t i = inbuf_len;
-    
-    /* Since escaping potentially doubles the # of bytes, short-circuit the
-     * length check if destination buffer is clearly large enough.  Note the
-     *
-     */
-    if (outbuf_len <= inbuf_len << 1) {
-        size_t outbuf_required = inbuf_len + 1; /* +1 for the trailing control char */
-        
-        /* Each escaped character takes up two bytes in the output buffer */
-        while (i--) {
-            if (*src == DIAG_CONTROL_CHAR || *src == DIAG_ESC_CHAR)
-                outbuf_required++;
-            src++;
-        }
-        
-        if (outbuf_len < outbuf_required)
-            return 0;
-    }
-    
-    /* Do the actual escaping.  Replace both the control character and
-     * the escape character in the source buffer with the following sequence:
-     *
-     * <escape_char> <src_byte ^ escape_mask>
-     */
-    src = inbuf;
-    i = inbuf_len;
-    while (i--) {
-        if (*src == DIAG_CONTROL_CHAR || *src == DIAG_ESC_CHAR) {
-            *dst++ = DIAG_ESC_CHAR;
-            *dst++ = *src ^ DIAG_ESC_MASK;
-        } else
-            *dst++ = *src;
-        src++;
-    }
-    
-    return (dst - outbuf);
-}
-
-size_t dm_unescape (const char *inbuf, size_t inbuf_len, char *outbuf, size_t outbuf_len, boolean *escaping) {
-    size_t i, outsize;
-    
-    for (i = 0, outsize = 0; i < inbuf_len; i++) {
-        if (*escaping) {
-            outbuf[outsize++] = inbuf[i] ^ DIAG_ESC_MASK;
-            *escaping = FALSE;
-        } else if (inbuf[i] == DIAG_ESC_CHAR)
-            *escaping = TRUE;
-        else
-            outbuf[outsize++] = inbuf[i];
-        
-        /* About to overrun output buffer size */
-        if (outsize >= outbuf_len)
-            return 0;
-    }
-    
-    return outsize;
-}
-
-size_t dm_encapsulate_buffer (char *inbuf, size_t cmd_len, size_t inbuf_len, char *outbuf, size_t outbuf_len) {
-    u_int16_t crc;
-    size_t escaped_len;
-    
-    /* Add the CRC */
-    crc = dm_crc16 (inbuf, cmd_len);
-    inbuf[cmd_len++] = crc & 0xFF;
-    inbuf[cmd_len++] = (crc >> 8) & 0xFF;
-    
-    escaped_len = dm_escape (inbuf, cmd_len, outbuf, outbuf_len);
-    outbuf[escaped_len++] = DIAG_CONTROL_CHAR;
-    
-    return escaped_len;
-}
-
-
-boolean dm_decapsulate_buffer (const char *inbuf, size_t inbuf_len, char *outbuf, size_t outbuf_len, size_t *out_decap_len, size_t *out_used, boolean *out_need_more) {
-    boolean escaping = FALSE;
-    size_t i, pkt_len = 0, unesc_len;
-    u_int16_t crc, pkt_crc;
-    
-    *out_decap_len = 0;
-    *out_used = 0;
-    *out_need_more = FALSE;
-    
-    if (inbuf_len < 4) {
-        *out_need_more = TRUE;
-        return TRUE;
-    }
-    
-    /* Find the async control character */
-    for (i = 0; i < inbuf_len; i++) {
-        if (inbuf[i] == DIAG_CONTROL_CHAR) {
-            /* If the control character shows up in a position before a valid
-             * QCDM packet length (4), the packet is malformed.
-             */
-            if (i < 3) {
-                /* Tell the caller to advance the buffer past the control char */
-                *out_used = i + 1;
-                return FALSE;
-            }
-            
-            pkt_len = i;
-            break;
-        }
-    }
-    
-    /* No control char yet, need more data */
-    if (!pkt_len) {
-        *out_need_more = TRUE;
-        return TRUE;
-    }
-    
-    /* Unescape first; note that pkt_len */
-    unesc_len = dm_unescape (inbuf, pkt_len, outbuf, outbuf_len, &escaping);
-    if (!unesc_len) {
-        /* Tell the caller to advance the buffer past the control char */
-        *out_used = pkt_len + 1;
-        return FALSE;
-    }
-    
-    if (escaping) {
-        *out_need_more = TRUE;
-        return TRUE;
-    }
-    
-    /* Check the CRC of the packet's data */
-    crc = dm_crc16 (outbuf, unesc_len - 2);
-    pkt_crc = outbuf[unesc_len - 2] & 0xFF;
-    pkt_crc |= (outbuf[unesc_len - 1] & 0xFF) << 8;
-    if (crc != pkt_crc) {
-        *out_used = pkt_len + 1; /* packet + CRC + 0x7E */
-        return FALSE;
-    }
-    
-    *out_used = pkt_len + 1; /* packet + CRC + 0x7E */
-    *out_decap_len = unesc_len - 2; /* decap_len should not include the CRC */
-    return TRUE;
-}
-
 
 
 #endif /* defined(__dloadtool__util__) */

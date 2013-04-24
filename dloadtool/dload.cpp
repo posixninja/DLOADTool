@@ -13,22 +13,6 @@
 #include "util.h"
 #include "dload.h"
 
-UInt16 flip_endian16(UInt16 value) {
-    UInt16 result = 0;
-    result |= (value & 0xFF) << 8;
-    result |= (value & 0xFF00) >> 8;
-    return result;
-}
-
-UInt32 flip_endian32(UInt32 value) {
-    UInt32 result = 0;
-    result |= (value & 0xFF) << 24;
-    result |= (value & 0xFF00) << 8;
-    result |= (value & 0xFF0000) >> 8;
-    result |= (value & 0xFF000000) >> 24;
-    return result;
-}
-
 int dload_get_params(USBInterface interface) {
     UInt8 output[0x100];
     UInt8 request = 0x0;

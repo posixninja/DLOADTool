@@ -17,26 +17,6 @@
 #include "util.h"
 #include "dload.h"
 
-#define PACKETS 3
-
-UInt8 packets[PACKETS+1][0x10] = {
-    "\x01\x07",
-    "\x01\x0C",
-    "\x02\x14\xDD"
-    
-};
-
-void reset_baseband() {
-    printf("Resetting baseband\n");
-    io_connect_t connect = 0;
-    CFMutableDictionaryRef match = IOServiceMatching("AppleBaseband");
-    io_service_t service = IOServiceGetMatchingService(0, match);
-    IOServiceOpen(service, mach_task_self(), 0, &connect);
-    IOConnectCallScalarMethod(connect, 0, 0, 0, 0, 0);
-    IOServiceClose(connect);
-    sleep(1);
-}
-
 typedef enum {
     kDLoadNone,
     kDLoadSend,
@@ -114,7 +94,7 @@ int main (int argc, const char * argv[]) {
                     addr = 0x20012000;
                     dload_get_params(iface);
                     dload_get_sw_version(iface);
-                    dload_upload_firmware(iface, addr, "/usr/standalone/firmware/Trek/dbl.mng");
+                    dload_upload_firmware(iface, addr, "/usr/local/standalone/firmware/Trek/dbl.mbn");
                     dload_send_execute(iface, addr);
                 }
                 
